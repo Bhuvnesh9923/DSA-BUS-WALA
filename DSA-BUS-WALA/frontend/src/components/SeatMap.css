@@ -1,0 +1,177 @@
+/**
+ * SeatMap — component-scoped styles.
+ * Renders the 2D bus seat layout. Kept separate from index.css to stay
+ * self-contained and avoid collisions with the large global stylesheet.
+ */
+
+.seatmap-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 0 0;
+}
+
+.seatmap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.seatmap-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.seatmap-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0.15rem 0 0;
+}
+
+.seatmap-release-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.seatmap-release-btn:hover {
+  background: #fee2e2;
+}
+
+/* ── Grid ── */
+.seatmap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+}
+
+.seatmap-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* ── Seat cells ── */
+.seatmap-seat {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.5rem;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.seatmap-seat:hover:not(:disabled) {
+  border-color: #FF6B2C;
+  background: #fff7ed;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(255, 107, 44, 0.15);
+}
+
+.seatmap-seat:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* My seat */
+.seatmap-seat-mine {
+  border-color: #10b981;
+  background: #ecfdf5;
+  color: #059669;
+  cursor: default;
+}
+
+.seatmap-seat-mine .seatmap-owner-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Taken by someone else */
+.seatmap-seat-taken {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.seatmap-swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 0.25rem;
+  border: 2px solid #cbd5e1;
+}
+
+.seatmap-swatch-free { background: #ffffff; }
+.seatmap-swatch-mine { background: #ecfdf5; border-color: #10b981; }
+.seatmap-swatch-taken { background: #f1f5f9; border-color: #e2e8f0; }
+
+/* ── Legend ── */
+.seatmap-legend {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.seatmap-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ── States ── */
+.seatmap-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  color: #64748b;
+}
+
+.seatmap-state-text {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.seatmap-error {
+  color: #dc2626;
+}
+
+.seatmap-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid #e2e8f0;
+  border-top-color: #FF6B2C;
+  border-radius: 50%;
+  animation: seatmapSpin 0.8s linear infinite;
+}
+
+@keyframes seatmapSpin {
+  to { transform: rotate(360deg); }
+}

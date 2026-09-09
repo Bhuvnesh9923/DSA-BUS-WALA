@@ -1,0 +1,13 @@
+{
+  "appId": "com.trackmate.bus",
+  "appName": "TrackMate",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}

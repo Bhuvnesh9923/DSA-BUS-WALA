@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: trackmate-backend
+    runtime: node
+    plan: free
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /ping
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false
+      - key: DB_NAME
+        value: TrackMatev1
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://trackmaterce.onrender.com,https://trackmate.vercel.app
+      - key: OSRM_BASE_URL
+        value: http://router.project-osrm.org
+      - key: STALE_TRIP_HOURS
+        value: '12'
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_EMAIL
+        value: mailto:admin@example.com
+      - key: GPS_PROVIDER
+        value: none
+      - key: GPS_PROVIDER_URL
+        sync: false
+      - key: GPS_PROVIDER_TOKEN
+        sync: false
+      - key: GPS_POLL_INTERVAL_MS
+        value: '5000'
+      - key: EXCEL_OUTPUT_DIR
+        value: /tmp/exports
+      - key: EXCEL_PARTITION_MODE
+        value: hourly
+      - key: EXCEL_FLUSH_INTERVAL_MS
+        value: '5000'
+      - key: EXCEL_MAX_QUEUE
+        value: '10000'
+      - key: GPS_RETENTION_DAYS
+        value: '7'

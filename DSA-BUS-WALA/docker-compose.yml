@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:6
+    container_name: trackmate-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin}
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.runCommand({ ping: 1 })']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trackmate-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD:-admin}@mongodb:27017
+      DB_NAME: TrackMatev1
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      OSRM_BASE_URL: ${OSRM_BASE_URL:-http://router.project-osrm.org}
+      STALE_TRIP_HOURS: ${STALE_TRIP_HOURS:-12}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_EMAIL: ${VAPID_EMAIL:-mailto:admin@example.com}
+      GPS_PROVIDER: ${GPS_PROVIDER:-none}
+      GPS_PROVIDER_URL: ${GPS_PROVIDER_URL:-}
+      GPS_PROVIDER_TOKEN: ${GPS_PROVIDER_TOKEN:-}
+      GPS_POLL_INTERVAL_MS: ${GPS_POLL_INTERVAL_MS:-5000}
+      EXCEL_OUTPUT_DIR: ${EXCEL_OUTPUT_DIR:-/app/exports}
+      EXCEL_PARTITION_MODE: ${EXCEL_PARTITION_MODE:-hourly}
+      EXCEL_FLUSH_INTERVAL_MS: ${EXCEL_FLUSH_INTERVAL_MS:-5000}
+      EXCEL_MAX_QUEUE: ${EXCEL_MAX_QUEUE:-10000}
+      GPS_RETENTION_DAYS: ${GPS_RETENTION_DAYS:-7}
+    volumes:
+      - excel_exports:/app/exports
+    ports:
+      - '5000:5000'
+    env_file:
+      - ./backend/.env
+
+volumes:
+  mongo_data:
+  excel_exports:
