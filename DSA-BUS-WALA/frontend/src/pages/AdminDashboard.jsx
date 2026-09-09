@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../utils/api';
-import { API_BASE_URL } from '../constants/api';
 import { useSocket } from '../hooks/useSocket';
 import {
   Bus, Users, UserCheck, Navigation, Clock, MapPin,
@@ -9,6 +8,7 @@ import {
 } from 'lucide-react';
 import AdminMap from '../components/AdminMap';
 import TrackMateLoader from '../components/TrackMateLoader';
+import downloadFile from '../utils/downloadFile';
 
 // ===== COMPONENTS =====
 
@@ -242,10 +242,7 @@ const AdminDashboard = () => {
           </div>
           <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
             <button
-              onClick={() => {
-                const token = localStorage.getItem('tm_token');
-                window.open(`${API_BASE_URL}/api/admin/export-trips?days=30&token=${token}`, '_blank');
-              }}
+              onClick={() => downloadFile('/admin/export-trips?days=30', 'trip-history.csv').catch(() => {})}
               className="w-full flex items-center gap-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition group"
             >
               <div className="p-2 rounded-lg bg-emerald-500/20">
@@ -256,9 +253,8 @@ const AdminDashboard = () => {
             </button>
             <button
               onClick={() => {
-                const token = localStorage.getItem('tm_token');
                 const date = new Date().toISOString().slice(0, 10);
-                window.open(`${API_BASE_URL}/api/admin/export-live-gps?date=${date}&token=${token}`, '_blank');
+                downloadFile(`/admin/export-live-gps?date=${date}`, `live-gps-${date}.xlsx`).catch(() => {});
               }}
               className="w-full flex items-center gap-3 p-4 bg-white/5 rounded-xl hover:bg-white/10 transition group"
             >
