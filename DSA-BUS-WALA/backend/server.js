@@ -1,4 +1,7 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+// Also load the root-level Atlas credentials file as a fallback (gitignored).
+require('dotenv').config({ path: path.join(__dirname, '..', 'atlas-credentials.env') });
 
 const express = require('express');
 const cors = require('cors');
@@ -20,6 +23,7 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const { registerLocationHandlers } = require('./controllers/locationController');
 const publicRoutes = require('./routes/publicRoutes');
 const { router: gpsRoutes } = require('./routes/gpsRoutes');
+const demoRoutes = require('./routes/demoRoutes');
 const { startGpsPolling, normalizeGpsPayload } = require('./utils/gpsIngestion');
 const { persistGpsRecord } = require('./utils/gpsPersistence');
 const { startExcelExporter } = require('./utils/excelExporter');
@@ -76,6 +80,9 @@ app.use('/api/public', publicRoutes);
 
 // GPS ingestion — external real GPS provider pushes coordinates here
 app.use('/api/gps', gpsRoutes);
+
+// Demo replay — parse an uploaded Excel/CSV coordinates file for the driver simulator
+app.use('/api/demo', demoRoutes);
 
 // Lightweight health check — used by UptimeRobot / cron pings to prevent Render sleep
 app.get('/ping', (_req, res) => {

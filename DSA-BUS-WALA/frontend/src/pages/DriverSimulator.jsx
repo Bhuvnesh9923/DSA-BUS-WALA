@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import { refreshSocketAuth, useSocket } from '../hooks/useSocket';
-import { ELURU_SIM_PATH } from '../constants/geo';
+import { NAGPUR_SIM_PATH } from '../constants/geo';
 
-const DEFAULT_COORDS = ELURU_SIM_PATH.map((point) => `${point.lat},${point.lng}`).join('\n');
+const DEFAULT_COORDS = NAGPUR_SIM_PATH.map((point) => `${point.lat},${point.lng}`).join('\n');
 
 const parseCoordinates = (text) =>
   text
@@ -28,6 +28,9 @@ const DriverSimulator = () => {
   const [log, setLog] = useState([]);
   const [serverEvents, setServerEvents] = useState([]);
   const [isSimRunning, setIsSimRunning] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSummary, setUploadSummary] = useState('');
+  const fileInputRef = useRef(null);
   const timerRef = useRef(null);
   const pointerRef = useRef(0);
 
@@ -162,12 +165,60 @@ const DriverSimulator = () => {
     appendLog('Triggered socket auth refresh.');
   };
 
+  // ── Excel/CSV upload → build coordinate stream ──
+  const handleFileUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadSummary('');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const { data } = await api.post('/demo/parse-excel', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      if (!data?.ok) {
+        throw new Error(data?.message || 'Failed to parse file');
+      }
+
+      if (!data.rows?.length) {
+        setStatus(`No valid coordinates found. ${data.errorCount ? `Skipped ${data.errorCount} invalid row(s).` : ''}`);
+        return;
+      }
+
+      // Build "lat,lng" lines from the parsed rows for the coordinate stream.
+      const lines = data.rows.map((row) => `${row.lat},${row.lng}`).join('\n');
+      setCoordsText(lines);
+      pointerRef.current = 0;
+      setStatus(`Loaded ${data.total} coordinate pair(s) from ${file.name}.`);
+      setUploadSummary(`${data.total} rows loaded · ${data.errorCount || 0} skipped`);
+      appendLog(`Loaded ${data.total} coordinates from ${file.name}.`);
+    } catch (err) {
+      const message = err.response?.data?.message || err.message || 'Failed to parse file';
+      setStatus(message);
+      appendLog(`Upload error: ${message}`);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleUseDefaultPath = () => {
+    setCoordsText(DEFAULT_COORDS);
+    pointerRef.current = 0;
+    appendLog('Reset to default Nagpur demo path.');
+  };
+
   return (
     <section className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6 text-slate-100">
       <header>
         <h1 className="text-2xl font-semibold text-slate-800">Driver Simulator</h1>
         <p className="text-sm text-slate-500">
-          Use this panel to emit driver socket events without GPS hardware.
+          Use this panel to emit driver socket events without GPS hardware. Upload an Excel/CSV
+          file of coordinates to replay a real bus route for demos.
         </p>
       </header>
 
@@ -266,6 +317,38 @@ const DriverSimulator = () => {
               Stop Simulation
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Excel / CSV Upload Panel */}
+      <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow-xl">
+        <h2 className="text-lg font-semibold text-slate-700">Replay from Excel / CSV</h2>
+        <p className="mb-3 text-sm text-slate-500">
+          Upload a spreadsheet with <code className="text-amber-300">lat</code> and{' '}
+          <code className="text-amber-300">lng</code> (or latitude/longitude) columns. The rows
+          are replayed in order to move the bus along the route. Optional{' '}
+          <code className="text-amber-300">speed</code> / <code className="text-amber-300">speed_kmh</code>{' '}
+          columns are also accepted.
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            onChange={handleFileUpload}
+            className="block w-full max-w-xs text-sm text-slate-400 file:mr-4 file:rounded-full file:border-0 file:bg-slate-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-600"
+          />
+          <button
+            type="button"
+            onClick={handleUseDefaultPath}
+            className="rounded border border-slate-300 px-4 py-2 text-sm"
+          >
+            Use Default Nagpur Path
+          </button>
+          {isUploading && (
+            <span className="text-sm text-amber-300">Parsing file...</span>
+          )}
+          {uploadSummary && <span className="text-sm text-emerald-300">{uploadSummary}</span>}
         </div>
       </div>
 

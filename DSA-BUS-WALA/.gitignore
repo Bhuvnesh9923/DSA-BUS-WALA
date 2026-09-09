@@ -12,9 +12,14 @@ pnpm-lock.yaml
 .env.production.local
 backend/.env
 frontend/.env
+worker/.env
 
 # Secrets
 backend/keys.json
+
+# MongoDB Atlas credentials (sensitive — never commit)
+atlas-credentials.env
+*.atlas-credentials.env
 
 # Builds & Dist
 dist/

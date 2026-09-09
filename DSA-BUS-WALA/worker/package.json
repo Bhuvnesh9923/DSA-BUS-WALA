@@ -11,6 +11,7 @@
     "format": "prettier --write \"**/*.{js,json,md}\""
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "mongoose": "^7.6.3"
   },
   "devDependencies": {

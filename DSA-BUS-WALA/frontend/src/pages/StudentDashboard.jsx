@@ -17,7 +17,7 @@ const TOKEN_KEY = 'tm_token';
 const NOTIFICATION_PREF_KEY = 'tm_student_notifications';
 const EVENTS_STORAGE_KEY = 'tm_student_events';
 const DEPARTED_STORAGE_KEY = 'tm_student_departed';
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BDXVEVzz8rwtAK895AB89T--U1VMZ6FvyLQLF7em-fp3tQTDih-cT5ONqt_4qG88i8iBdRHdzavUvVvk7nQOOH8';
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BB-mUg8K2OcS2V132PRVreEUU-EcR_QEnM5mcGGbxpF2sI-N1HM8OwA2fw4lhhvI8Zg0kyJaBtSsSxBvgbUp6zA';
 
 const urlBase64ToUint8Array = (base64String) => {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -7,7 +7,7 @@ import SeatMap from '../components/SeatMap';
 import {
   User, Phone, Lock, Shield, Save, Eye, EyeOff,
   Bus, MapPin, AlertCircle, IdCard, ChevronRight, X,
-  Navigation, Settings, Users, UserCheck, LayoutDashboard, Mail
+  Navigation, Settings, Users, UserCheck, LayoutDashboard, Mail, Octagon
 } from 'lucide-react';
 
 const roleRedirect = {
@@ -223,17 +223,20 @@ const Profile = () => {
                 </div>
                 <div className="profile-perms-list">
                   {[
-                    { icon: LayoutDashboard, label: 'Dashboard & Analytics' },
-                    { icon: Bus, label: 'Manage Buses' },
-                    { icon: UserCheck, label: 'Manage Drivers' },
-                    { icon: Navigation, label: 'Manage Routes' },
-                    { icon: Users, label: 'Manage Students' },
-                    { icon: Settings, label: 'System Configuration' },
-                  ].map(({ icon: Icon, label }) => (
-                    <div key={label} className="profile-perm-item">
+                    { icon: LayoutDashboard, label: 'Dashboard & Analytics', to: '/admin' },
+                    { icon: Bus, label: 'Manage Buses', to: '/admin/buses' },
+                    { icon: UserCheck, label: 'Manage Drivers', to: '/admin/drivers' },
+                    { icon: Navigation, label: 'Manage Routes', to: '/admin/routes' },
+                    { icon: Users, label: 'Manage Students', to: '/admin/students' },
+                    { icon: Octagon, label: 'Manage Stops', to: '/admin/stops' },
+                    { icon: MapPin, label: 'Assignments', to: '/admin/assignments' },
+                    { icon: Settings, label: 'Driver Simulator', to: '/driver-sim' },
+                  ].map(({ icon: Icon, label, to }) => (
+                    <Link key={label} to={to} className="profile-perm-item">
                       <Icon className="w-4 h-4 profile-perm-icon" />
                       <span>{label}</span>
-                    </div>
+                      <ChevronRight className="w-4 h-4 profile-perm-chevron" />
+                    </Link>
                   ))}
                 </div>
               </section>

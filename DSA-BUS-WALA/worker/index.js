@@ -1,11 +1,14 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+// Fall back to the MongoDB Atlas credentials file (if present).
+require('dotenv').config({ path: path.join(__dirname, '..', 'atlas-credentials.env') });
 
 const mongoose = require('mongoose');
 
 const STALE_TRIP_HOURS = parseInt(process.env.STALE_TRIP_HOURS || '12', 10);
 
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI;
+  const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
   const dbName = process.env.DB_NAME || 'TrackMatev1';
 
   if (!uri) {
